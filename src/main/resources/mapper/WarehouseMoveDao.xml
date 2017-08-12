@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.sierac.dao.WarehouseMoveDao">
+
+    <select id="findAll" resultType="WarehouseMove">
+        SELECT
+            wm.`id` AS id,
+            wm.`code` AS code,
+            wm.`upload_time` AS uploadTime,
+            wm.`scan_by` AS scanBy,
+            wm.`bill_type` AS billType,
+            wm.`bill_status` AS billStatus,
+            wm.`submit_by` AS submitBy,
+            wm.`submit_date` AS submitDate,
+            wm.`send_id` AS sendId,
+            wm.`send_code` AS sendCode,
+            wm.`send_name` AS sendName,
+            wm.`receive_id` AS receiveId,
+            wm.`receive_code` AS receiveCode,
+            wm.`receive_name` AS receiveName
+        FROM
+          warehouse_move wm
+        WHERE
+          wm.`send_id`=#{sendId}
+        AND
+          wm.`scan_by`=#{scanBy}
+        AND
+          wm.`del_flag`='0'
+        AND
+          wm.`bill_status` = '1'
+    </select>
+
+    <select id="findByCode" resultType="WarehouseMove">
+        SELECT
+        *
+        FROM
+        warehouse_move
+        WHERE
+        code =#{code}
+        limit 1
+    </select>
+
+    <update id="update" parameterType="WarehouseMoveHeader">
+        UPDATE
+        warehouse_move
+        SET
+        `bill_status` = #{billStatus},
+        `upload_time` = #{uploadTime},
+        `submit_by` = #{submitBy},
+        `scan_by` = #{scanBy},
+        `submit_date` = #{submitDate},
+        `create_date` = #{createDate},
+        `update_date` = #{updateDate}
+        WHERE `code` = #{code}
+    </update>
+
+    <update id="updateStatus" parameterType="WarehouseMoveHeader">
+        UPDATE
+        warehouse_move
+        SET
+        `bill_status` = #{billStatus}
+        WHERE `code` = #{code}
+    </update>
+
+
+</mapper>

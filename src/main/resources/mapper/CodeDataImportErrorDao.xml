@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.sierac.dao.CodeDataImportErrorDao">
+
+	<sql id="codeDataImportErrorColumns">
+		a.id AS "id",
+		a.code AS "code",
+		a.error_status AS
+		"errorStatus",
+		a.parent_code AS "parentCode",
+		a.error_code AS
+		"errorCode",
+		a.error_info AS "errorInfo",
+		a.line_code AS "lineCode",
+		a.batch_code AS "batchCode",
+		a.root_code AS "rootCode",
+		a.print_date AS
+		"printDate",
+		a.del_flag AS "delFlag",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.pack_level AS "packLevel"
+	</sql>
+
+	<sql id="codeDataImportErrorJoins">
+	</sql>
+
+	<select id="get" resultType="CodeDataImportError">
+		SELECT
+		<include refid="codeDataImportErrorColumns" />
+		FROM code_data_import_error a
+		<include refid="codeDataImportErrorJoins" />
+		WHERE a.id = #{id}
+	</select>
+
+	<select id="findList" resultType="CodeDataImportError">
+		SELECT
+		<include refid="codeDataImportErrorColumns" />
+		FROM code_data_import_error a
+		<include refid="codeDataImportErrorJoins" />
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			
+			<if test="errorCode != null and errorCode != ''">
+				AND a.error_code = #{errorCode}
+			</if>
+			<if test="errorInfo != null and errorInfo != ''">
+				AND a.error_info LIKE 
+					<if test="dbName == 'oracle'">'%'||#{errorInfo}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{errorInfo}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{errorInfo},'%')</if>
+			</if>
+			<if test="lineCode != null and lineCode != ''">
+				AND a.line_code LIKE 
+					<if test="dbName == 'oracle'">'%'||#{lineCode}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{lineCode}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{lineCode},'%')</if>
+			</if>
+			<if test="batchCode != null and batchCode != ''">
+				AND a.batch_code LIKE 
+					<if test="dbName == 'oracle'">'%'||#{batchCode}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{batchCode}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{batchCode},'%')</if>
+			</if>
+			<if test="code != null and code != ''">
+				AND a.code LIKE 
+					<if test="dbName == 'oracle'">'%'||#{code}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{code}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{code},'%')</if>
+			</if>
+			<if test="parentCode != null and parentCode != ''">
+				AND a.parent_code LIKE 
+					<if test="dbName == 'oracle'">'%'||#{parentCode}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{parentCode}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{parentCode},'%')</if>
+			</if>
+			
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="findAllList" resultType="CodeDataImportError">
+		SELECT
+		<include refid="codeDataImportErrorColumns" />
+		FROM code_data_import_error a
+		<include refid="codeDataImportErrorJoins" />
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+
+	<insert id="insert">
+		INSERT INTO code_data_import_error(
+		id,
+		code,
+		error_status,
+		parent_code,
+		error_code,
+		error_info,
+		line_code,
+		batch_code,
+		root_code,
+		print_date,
+		del_flag,
+		create_by,
+		create_date,
+		update_by,
+		update_date,
+		pack_level
+		) VALUES (
+		#{id},
+		#{code},
+		#{errorStatus},
+		#{parentCode},
+		#{errorCode},
+		#{errorInfo},
+		#{lineCode},
+		#{batchCode},
+		#{rootCode},
+		#{printDate},
+		#{delFlag},
+		#{createBy.id},
+		#{createDate},
+		#{updateBy.id},
+		#{updateDate},
+		#{packLevel}
+		)
+	</insert>
+
+	<update id="update">
+		UPDATE code_data_import_error SET
+		code = #{code},
+		error_status = #{errorStatus},
+		parent_code = #{parentCode},
+		error_code = #{errorCode},
+		error_info = #{errorInfo},
+		line_code = #{lineCode},
+		batch_code = #{batchCode},
+		root_code = #{rootCode},
+		print_date = #{printDate},
+		update_by = #{updateBy.id},
+		update_date = #{updateDate},
+		pack_level=#{packLevel}
+		WHERE id = #{id}
+	</update>
+
+	<update id="delete">
+		UPDATE code_data_import_error SET
+		del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+
+
+	<insert id="insertBatch" parameterType="java.util.List">
+		INSERT INTO code_data_import_error(
+		id,
+		code,
+		error_status,
+		parent_code,
+		error_code,
+		error_info,
+		line_code,
+		batch_code,
+		root_code,
+
+		pack_level
+		) VALUES
+		<foreach collection="list" item="error" index="index"
+				 separator=",">
+			(
+			#{error.id},
+			#{error.code},
+			#{error.errorStatus},
+			#{error.parentCode},
+			#{error.errorCode},
+			#{error.errorInfo},
+			#{error.lineCode},
+			#{error.batchCode},
+			#{error.rootCode},
+
+
+
+			#{error.packLevel}
+			)
+		</foreach>
+	</insert>
+
+</mapper>

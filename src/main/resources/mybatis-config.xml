@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+        <!DOCTYPE configuration
+                PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+                "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+    <settings>
+
+        <setting name="logPrefix" value="dao."/>
+        <!-- 全局映射器启用缓存 -->
+        <setting name="cacheEnabled" value="true"/>
+        <!-- 查询时，关闭关联对象即时加载以提高性能 -->
+        <setting name="lazyLoadingEnabled" value="true"/>
+        <!-- 设置关联对象加载的形态，此处为按需加载字段(加载字段由SQL指定)，不会加载关联表的所有字段，以提高性能 -->
+        <setting name="aggressiveLazyLoading" value="false"/>
+        <!-- 对于未知的SQL查询，允许返回不同的结果集以达到通用的效果 -->
+        <setting name="multipleResultSetsEnabled" value="true"/>
+        <!-- 允许使用列标签代替列名 -->
+        <setting name="useColumnLabel" value="true"/>
+        <!-- 允许使用自定义的主键值(比如由程序生成的UUID 32位编码作为键值)，数据表的PK生成策略将被覆盖 -->
+        <setting name="useGeneratedKeys" value="true"/>
+        <!-- 给予被嵌套的resultMap以字段-属性的映射支持 -->
+        <setting name="autoMappingBehavior" value="FULL"/>
+        <!-- 是否开启自动驼峰命名规则（camel case）映射，即从经典数据库列名 A_COLUMN 到经典 Java 属性名 aColumn
+    的类似映射 -->
+        <setting name="mapUnderscoreToCamelCase" value="true"/>
+        <!-- 打印sql语句 -->
+        <setting name="logImpl" value="STDOUT_LOGGING" />
+        <setting name="callSettersOnNulls" value="true"/>
+    </settings>
+
+    <typeAliases>
+        <!--实体类-->
+        <package name="cn.sierac.entity"/>
+    </typeAliases>
+
+    <!--mapper文件配置-->
+    <mappers>
+        <mapper resource="mapper/FruitMapperDao.xml"/>
+        <mapper resource="mapper/UserMapperDao.xml"/>
+        <mapper resource="mapper/DealerMapperDao.xml"/>
+        <mapper resource="mapper/WarehouseLoginDao.xml"/>
+        <mapper resource="mapper/RdcOutHeaderDao.xml"/>
+        <mapper resource="mapper/DealerLoginDao.xml"/>
+        <mapper resource="mapper/WarehouseDetailDao.xml"/>
+        <mapper resource="mapper/WarehouseMoveDao.xml"/>
+        <mapper resource="mapper/ApiRdcOutHeaderDao.xml"/>
+        <mapper resource="mapper/ApiRdcOutDetailDao.xml"/>
+        <mapper resource="mapper/WarehouseOutScanCheckDao.xml"/>
+        <mapper resource="mapper/CodeDataDao.xml"/>
+        <mapper resource="mapper/ApiRdcOutDataDao.xml"/>
+        <mapper resource="mapper/DealerDetailDao.xml"/>
+        <mapper resource="mapper/DealerScanCheckDao.xml"/>
+        <mapper resource="mapper/ApiDealerDao.xml"/>
+        <mapper resource="mapper/ApiDealerDetailDao.xml"/>
+        <mapper resource="mapper/ApiDealerDataDao.xml"/>
+        <mapper resource="mapper/WarehouseMoveScanCheckDao.xml" />
+        <mapper resource="mapper/WarehouseMoveDataDao.xml" />
+        <mapper resource="mapper/WarehouseMoveDetailDao.xml" />
+        <mapper resource="mapper/DealerMoveDao.xml" />
+        <mapper resource="mapper/DealerMoveDetailDao.xml" />
+        <mapper resource="mapper/DealerMoveScanCheckDao.xml" />
+        <mapper resource="mapper/DealerMoveDataDao.xml" />
+        <mapper resource="mapper/DealerReceiveDao.xml" />
+        <mapper resource="mapper/DealerReceiveDetailDao.xml" />
+        <mapper resource="mapper/DealerReceiveScanCheckDao.xml" />
+        <mapper resource="mapper/DealerReceiveDataDao.xml" />
+        <mapper resource="mapper/ProductDao.xml"/>
+        <mapper resource="mapper/ApiDataDao.xml"/>
+        <mapper resource="mapper/CodeDataImportErrorDao.xml"/>
+        <mapper resource="mapper/CodeDataBatchReportDao.xml"/>
+        <mapper resource="mapper/CodeDataUploadRecordDao.xml"/>
+    </mappers>
+
+</configuration>

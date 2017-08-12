@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.sierac.dao.CodeDataBatchReportDao">
+    
+	<sql id="codeDataBatchReportColumns">
+		a.id AS "id",
+		a.batch_code AS "batchCode",
+		a.product_code AS "productCode",
+		a.product_name AS "productName",
+		a.mfg_date AS "mfgDate",
+		a.ctns AS "ctns",
+		a.qty AS "qty",
+		a.del_flag AS "delFlag",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate"
+	</sql>
+	
+	<sql id="codeDataBatchReportJoins">
+	</sql>
+    
+	<select id="get" resultType="CodeDataBatchReport">
+		SELECT 
+			<include refid="codeDataBatchReportColumns"/>
+		FROM code_data_batch_report a
+		<include refid="codeDataBatchReportJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="CodeDataBatchReport">
+		SELECT 
+			<include refid="codeDataBatchReportColumns"/>
+		FROM code_data_batch_report a
+		<include refid="codeDataBatchReportJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+			
+			<if test="batchCode != null and batchCode != ''">
+				AND a.batch_code LIKE 
+					<if test="dbName == 'oracle'">'%'||#{batchCode}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{batchCode}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{batchCode},'%')</if>
+			</if>
+			<if test="productCode != null and productCode != ''">
+				AND a.product_code LIKE 
+					<if test="dbName == 'oracle'">'%'||#{productCode}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{productCode}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{productCode},'%')</if>
+			</if>
+			<if test="productName != null and productName != ''">
+				AND a.product_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{productName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{productName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{productName},'%')</if>
+			</if>
+			<if test="beginDate != null and endDate != null and beginDate != '' and endDate != ''">
+				AND  a.mfg_date BETWEEN #{beginDate} AND #{endDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CodeDataBatchReport">
+		SELECT 
+			<include refid="codeDataBatchReportColumns"/>
+		FROM code_data_batch_report a
+		<include refid="codeDataBatchReportJoins"/>
+		<where>
+			a.del_flag = #{DEL_FLAG_NORMAL}
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO code_data_batch_report(
+			id,
+			batch_code,
+			product_code,
+			product_name,
+			mfg_date,
+			ctns,
+			qty,
+			del_flag
+
+		) VALUES (
+			#{id},
+			#{batchCode},
+			#{productCode},
+			#{productName},
+			#{mfgDate},
+			#{ctns},
+			#{qty},
+			#{delFlag}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE code_data_batch_report SET 	
+			batch_code = #{batchCode},
+			product_code = #{productCode},
+			product_name = #{productName},
+			mfg_date = #{mfgDate},
+			ctns = #{ctns},
+			qty = #{qty},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		UPDATE code_data_batch_report SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</update>
+
+</mapper>

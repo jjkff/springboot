@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.sierac.dao.DealerReceiveDao">
+
+    <select id="findAll" resultType="DealerReceive">
+        SELECT
+            dr.`id` AS id,
+            dr.`code` AS code,
+            dr.`upload_time` AS uploadTime,
+            dr.`scan_by` AS scanBy,
+            dr.`bill_type` AS billType,
+            dr.`bill_status` AS billStatus,
+            dr.`submit_by` AS submitBy,
+            dr.`submit_date` AS submitDate,
+            dr.`send_id` AS sendId,
+            dr.`send_code` AS sendCode,
+            dr.`send_name` AS sendName,
+            dr.`receive_id` AS receiveId,
+            dr.`receive_code` AS receiveCode,
+            dr.`receive_name` AS receiveName
+        FROM
+          dealer_receive dr
+        WHERE
+          dr.`send_id`=#{sendId}
+        AND
+          dr.`scan_by`=#{scanBy}
+        AND
+          dr.`del_flag`='0'
+        AND
+          dr.`bill_status` = '1'
+    </select>
+
+    <select id="findByCode" resultType="DealerReceive">
+        SELECT
+        *
+        FROM
+        dealer_receive
+        WHERE
+        code =#{code}
+        limit 1
+    </select>
+
+    <update id="update" parameterType="DealerReceiveHeader">
+        UPDATE
+        dealer_receive
+        SET
+        `bill_status` = #{billStatus},
+        `upload_time` = #{uploadTime},
+        `submit_by` = #{submitBy},
+        `scan_by` = #{scanBy},
+        `submit_date` = #{submitDate},
+        `create_date` = #{createDate},
+        `update_date` = #{updateDate}
+        WHERE `code` = #{code}
+    </update>
+
+    <update id="updateStatus" parameterType="DealerReceiveHeader">
+        UPDATE
+        dealer_receive
+        SET
+        `bill_status` = #{billStatus}
+        WHERE `code` = #{code}
+    </update>
+
+
+
+
+</mapper>

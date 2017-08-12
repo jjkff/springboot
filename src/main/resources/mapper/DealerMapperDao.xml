@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.sierac.dao.DealerMapperDao">
+
+	<select id="findAll" resultType="Dealer">
+		SELECT
+		rh.`id` AS id,
+		rh.`code` AS code,
+		rh.`bill_type` AS billType,
+		rh.`bill_status` AS billStatus,
+		rh.`send_id` AS sendId,
+		rh.`send_code` AS sendCode,
+		rh.`send_name` AS sendName,
+		rh.`receive_id` AS receiveId,
+		rh.`receive_code` AS receiveCode,
+		rh.receive_name AS receiveName,
+		rh.`upload_time` uploadTime,
+		rh.`submit_by` AS sumitBy,
+		rh.`scan_by` AS scanBy
+		FROM
+		dealer rh
+		WHERE  rh.`bill_status`=#{billStatus} and rh.`send_id` = #{sendId}
+		AND rh.del_flag = '0'
+
+	</select>
+
+
+	<select id="findByCode" resultType="Dealer">
+		SELECT
+		*
+		FROM
+		dealer
+		WHERE
+		code =#{code}
+		limit 1
+	</select>
+
+</mapper>

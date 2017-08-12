@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.sierac.dao.CodeDataUploadRecordDao">
+
+	<sql id="codeDataUploadRecordColumns">
+		a.id AS "id",
+		a.directory AS "directory",
+		a.file_name AS "fileName",
+		a.product_code AS "productCode",
+		a.product_name AS "productName",
+		a.begin_time AS "beginTime",
+		a.end_time AS "endTime",
+		a.line_code AS "lineCode",
+		a.batch_code AS "batchCode",
+		a.upload_status AS "uploadStatus",
+		a.create_time AS "createTime",
+		a.qty AS "qty",
+		a.ctns AS "ctns",
+		a.successqty AS "successqty",
+		a.successctn AS "successctn",
+		a.failqty AS "failqty",
+		a.failctn AS "failctn",
+		a.abnomal_code AS "abnomalCode",
+		a.remarks AS "remarks",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate"
+	</sql>
+	
+	<sql id="codeDataUploadRecordJoins">
+	</sql>
+    
+	<select id="get" resultType="CodeDataUploadRecord">
+		SELECT 
+			<include refid="codeDataUploadRecordColumns"/>
+		FROM code_data_upload_record a
+		<include refid="codeDataUploadRecordJoins"/>
+		WHERE a.id = #{id}
+	</select>
+	
+	<select id="findList" resultType="CodeDataUploadRecord">
+		SELECT 
+			<include refid="codeDataUploadRecordColumns"/>
+		FROM code_data_upload_record a
+		<include refid="codeDataUploadRecordJoins"/>
+		<where>
+			<if test="uploadStatus != null and uploadStatus != ''">
+				AND a.upload_status = #{uploadStatus}
+			</if>
+			<if test="fileName != null and fileName != ''">
+				AND a.file_name LIKE 
+					<if test="dbName == 'oracle'">'%'||#{fileName}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{fileName}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{fileName},'%')</if>
+			</if>
+			<if test="lineCode != null and lineCode != ''">
+				AND a.line_code LIKE 
+					<if test="dbName == 'oracle'">'%'||#{lineCode}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{lineCode}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{lineCode},'%')</if>
+			</if>
+			<if test="batchCode != null and batchCode != ''">
+				AND a.batch_code LIKE 
+					<if test="dbName == 'oracle'">'%'||#{batchCode}||'%'</if>
+					<if test="dbName == 'mssql'">'%'+#{batchCode}+'%'</if>
+					<if test="dbName == 'mysql'">concat('%',#{batchCode},'%')</if>
+			</if>
+			<if test="startBeginDate != null and startEndDate != null and startBeginDate != '' and startEndDate != ''">
+				AND  a.begin_time BETWEEN #{startBeginDate} AND #{startEndDate}
+			</if>
+			<if test="overBeginDate != null and overEndDate != null and overBeginDate != '' and overEndDate != ''">
+				AND  a.end_time BETWEEN #{overBeginDate} AND #{overEndDate}
+			</if>
+			<if test="createBeginDate != null and createEndDate != null and createBeginDate != '' and createEndDate != ''">
+				AND  a.create_time BETWEEN #{cteateBeginDate} AND #{cteateEndDate}
+			</if>
+		</where>
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<select id="findAllList" resultType="CodeDataUploadRecord">
+		SELECT 
+			<include refid="codeDataUploadRecordColumns"/>
+		FROM code_data_upload_record a
+		<include refid="codeDataUploadRecordJoins"/>
+		<where>
+			
+		</where>		
+		<choose>
+			<when test="page !=null and page.orderBy != null and page.orderBy != ''">
+				ORDER BY ${page.orderBy}
+			</when>
+			<otherwise>
+				ORDER BY a.update_date DESC
+			</otherwise>
+		</choose>
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO code_data_upload_record(
+			id,
+			directory,
+			file_name,
+			product_code,
+			product_name,
+			begin_time,
+			end_time,
+			line_code,
+			batch_code,
+			upload_status,
+			create_time,
+			qty,
+			ctns,
+			successqty,
+			successctn,
+			failqty,
+			failctn,
+			abnomal_code,
+			remarks
+
+		) VALUES (
+			#{id},
+			#{directory},
+			#{fileName},
+			#{productCode},
+			#{productName},
+			#{beginTime},
+			#{endTime},
+			#{lineCode},
+			#{batchCode},
+			#{uploadStatus},
+			#{createTime},
+			#{qty},
+			#{ctns},
+			#{successqty},
+			#{successctn},
+			#{failqty},
+			#{failctn},
+			#{abnomalCode},
+			#{remarks}
+		)
+	</insert>
+	
+	<update id="update">
+		UPDATE code_data_upload_record SET 	
+			directory = #{directory},
+			file_name = #{fileName},
+			product_code = #{productCode},
+			product_name = #{productName},
+			begin_time = #{beginTime},
+			end_time = #{endTime},
+			line_code = #{lineCode},
+			batch_code = #{batchCode},
+			upload_status = #{uploadStatus},
+			create_time = #{createTime},
+			qty = #{qty},
+			ctns = #{ctns},
+			successqty = #{successqty},
+			successctn = #{successctn},
+			failqty = #{failqty},
+			failctn = #{failctn},
+			abnomal_code = #{abnomalCode},
+			remarks = #{remarks},
+			update_by = #{updateBy.id},
+			update_date = #{updateDate}
+		WHERE id = #{id}
+	</update>
+	
+	<update id="delete">
+		DELETE FROM code_data_upload_record
+		WHERE id = #{id}
+	</update>
+
+</mapper>

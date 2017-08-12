@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.sierac.dao.WarehouseMoveDetailDao">
+
+    <select id="findWarehouseMoveDetail" resultType="WarehouseMoveDetail">
+        SELECT
+            d.id,
+            p.`code`,
+            d.header_id,
+            d.product_id,
+            p. CODE AS product_code,
+            p.sku AS product_sku,
+            p. NAME AS product_name,
+            w.send_id,
+            w.receive_code,
+            d.batch_code,
+            d.actual_pcs_qty AS actualPcsQty,
+            d.expect_pcs_qty AS expectPcsQty
+        FROM
+            warehouse_move_detail d,
+            warehouse_move w,
+            product p
+        WHERE
+            w.id = d.header_id
+        AND d.product_id = p.id
+        AND w. CODE = #{code}
+        AND d. del_flag= '0'
+    </select>
+
+    <update id="update" parameterType="WarehouseMoveDetail">
+        UPDATE
+        warehouse_move_detail
+        SET
+        `actual_pcs_qty` =#{actualPcsQty}
+        WHERE `id` = #{id}
+    </update>
+
+</mapper>

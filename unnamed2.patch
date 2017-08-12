@@ -1,0 +1,16 @@
+Index: src/main/resources/mybatis-config.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/resources/mybatis-config.xml	(revision ec417f3521518e8c14d1d72f5816b6de258f1df3)
++++ src/main/resources/mybatis-config.xml	(revision )
+@@ -48,6 +48,7 @@
+         <mapper resource="mapper/WarehouseOutScanCheckDao.xml"/>
+         <mapper resource="mapper/CodeDataDao.xml"/>
+         <mapper resource="mapper/ApiRdcOutDataDao.xml"/>
++
+     </mappers>
+ 
+ </configuration>
+\ No newline at end of file

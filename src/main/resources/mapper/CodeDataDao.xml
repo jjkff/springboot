@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.sierac.dao.CodeDataDao">
+
+
+
+
+	<sql id="codeDataColumns">
+		a.id AS "id",
+		a.code AS "code",
+		a.ept_code AS "eptCode",
+		-- 		a.ctn_code AS "ctnCode",
+		-- 		a.plt_code AS "pltCode",
+		a.parent_code AS parentCode,
+		a.root_code AS rootCode,
+		a.line_code AS "lineCode",
+		a.batch_code AS "batchCode",
+		a.pack_date AS "packDate",
+		a.valid_period AS "validPeriod",
+		a.print_date AS "printDate",
+		a.worker_code AS "workerCode",
+		a.team_code AS "teamCode",
+		a.active AS "active",
+		a.origin_id AS "originId",
+		a.current_location AS "currentLocation",
+		a.is_tracked AS "isTracked",
+		p.code AS "pcode",
+		p.name AS "name",
+		a.product_id AS "productId",
+		a.factory_id AS "factoryId",
+		a.create_by AS "createBy.id",
+		a.create_date AS "createDate",
+		a.update_by AS "updateBy.id",
+		a.update_date AS "updateDate",
+		a.remarks AS "remarks",
+		a.del_flag AS "delFlag",
+		a.out_header_id AS "outHeaderId",
+		a.pack_level AS "packLevel"
+	</sql>
+
+	<sql id="codeDataJoins">
+	</sql>
+
+
+	<update id="updateAll">
+		UPDATE
+		`code_data`
+		SET
+		`status` =#{status},
+		`out_header_id` =#{outHeaderId},
+		`update_date` =#{updateDate}
+		WHERE `code` =#{code}
+	</update>
+
+	<select id="findByParentCode" resultType="CodeData">
+		SELECT
+		<include refid="codeDataColumns"/>
+		FROM code_data a join product p
+		ON a.product_id=p.id
+		WHERE
+		a.parent_code=#{code}
+		AND a.del_flag = '0'
+	</select>
+
+
+	<update id="updateByParentCode" parameterType="java.util.Map">
+		UPDATE
+		`code_data`
+		SET
+		`status` =#{status},
+		`out_header_id` =#{outHeaderId},
+		`update_date` =#{updateDate}
+		WHERE
+		parent_code = #{parentCode}
+	</update>
+
+
+	<insert id="insert">
+		INSERT INTO code_data(
+		id,
+		code,
+		ept_code,
+		parent_code,
+		root_code,
+		line_code,
+		batch_code,
+		pack_date,
+		valid_period,
+		print_date,
+		worker_code,
+		team_code,
+		active,
+		origin_id,
+		is_tracked,
+		current_location,
+		product_id,
+		factory_id,
+		create_by,
+		create_date,
+		update_by,
+		update_date,
+		out_header_id,
+		pack_level
+		) VALUES (
+		#{id},
+		#{code},
+		#{eptCode},
+		#{parentCode},
+		#{rootCode},
+		#{lineCode},
+		#{batchCode},
+		#{packDate},
+		#{validPeriod},
+		#{printDate},
+		#{workerCode},
+		#{teamCode},
+		#{active},
+		#{originId},
+		#{isTracked},
+		#{currentLocation},
+		#{productId},
+		#{factoryId},
+		#{createBy.id},
+		#{createDate},
+		#{updateBy.id},
+		#{updateDate},
+		#{outHeaderId},
+		#{packLevel}
+		)
+	</insert>
+
+
+	<insert id="insertBatch" parameterType="java.util.List">
+		INSERT INTO code_data(
+		id,
+		code,
+		ept_code,
+		parent_code,
+		root_code,
+		line_code,
+		batch_code,
+		pack_date,
+		valid_period,
+		print_date,
+		worker_code,
+		team_code,
+		active,
+		origin_id,
+		is_tracked,
+		current_location,
+		product_id,
+		factory_id,
+		create_by,
+		create_date,
+		update_by,
+		update_date,
+		out_header_id,
+		pack_level
+		)VALUES
+		<foreach collection="list" item="codeData" index="index"
+				 separator=",">
+			(
+			#{codeData.id},
+			#{codeData.code},
+			#{codeData.eptCode},
+			#{codeData.parentCode},
+			#{codeData.rootCode},
+			#{codeData.lineCode},
+			#{codeData.batchCode},
+			#{codeData.packDate},
+			#{codeData.validPeriod},
+			#{codeData.printDate},
+			#{codeData.workerCode},
+			#{codeData.teamCode},
+			#{codeData.active},
+			#{codeData.originId},
+			#{codeData.isTracked},
+			#{codeData.currentLocation},
+			#{codeData.productId},
+			#{codeData.factoryId},
+			#{codeData.createBy.id},
+			#{codeData.createDate},
+			#{codeData.updateBy.id},
+			#{codeData.updateDate},
+			#{codeData.outHeaderId},
+			#{codeData.packLevel}
+			)
+		</foreach>
+	</insert>
+
+
+	<select id="findByCode" parameterType="java.lang.String" resultType="CodeData">
+		select
+		<include refid="codeDataColumns"/>
+		FROM code_data a,product p
+		<include refid="codeDataJoins"/>
+		WHERE a.code=#{code}
+		AND a.product_id=p.id
+	</select>
+
+
+
+
+</mapper>

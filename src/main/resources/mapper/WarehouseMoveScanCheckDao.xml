@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.sierac.dao.WarehouseMoveScanCheckDao">
+
+    <select id="findWarehouseMoveScanCheck" resultType="WarehouseMoveScanCheck">
+		   SELECT
+		cd.`code` AS CODE,
+		cd.`parent_code` AS parentCode,
+		cd.`pack_level` AS packLevel,
+		cd.`batch_code` AS batchCode,
+		cd.`product_id` AS productId,
+		cd.`status` AS status,
+		p.`name` AS productName,
+		p.`pcs_per_ctn` AS pcsPerCtn,
+		p.`ctn_per_plt` AS ctnPerPlt,
+		p.`spec` AS spec,
+		q.`qty` AS qty
+	FROM
+		`code_data` cd,
+		product p,
+		`query_report` q
+	WHERE
+		cd.`product_id` = p.`id`
+	AND q. CODE = p.code
+	AND cd.`code` = #{code}
+    </select>
+
+</mapper>

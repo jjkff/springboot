@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.sierac.dao.WarehouseMoveDataDao">
+
+	<insert id="insertBatch" parameterType="java.util.List">
+		INSERT INTO warehouse_move_data (
+		`id`,
+		`code`,
+		`header_id`,
+		`detail_id`,
+		`parent_code`,
+		`product_id`,
+		`batch_code`,
+		`pack_level`,
+		`scan_code`,
+		`scan_by`,
+		`scan_time`,
+		`qty`
+		)VALUES
+		<foreach collection="list" item="data" index="index" separator=",">
+			(
+			#{data.id},
+			#{data.code},
+			#{data.headerId},
+			#{data.detailId},
+			#{data.parentCode},
+			#{data.productId},
+			#{data.batchCode},
+			#{data.packLevel},
+			#{data.scanCode},
+			#{data.scanBy},
+			#{data.scanTime},
+			#{data.qty}
+			)
+		</foreach>
+
+	</insert>
+</mapper>

@@ -1,0 +1,442 @@
+Index: src/main/resources/mapper/ApiRdcOutHeaderDao.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/resources/mapper/ApiRdcOutHeaderDao.xml	(revision )
++++ src/main/resources/mapper/ApiRdcOutHeaderDao.xml	(revision )
+@@ -0,0 +1,44 @@
++<?xml version="1.0" encoding="UTF-8" ?>
++<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
++<mapper namespace="cn.sierac.dao.ApiRdcOutHeaderDao">
++	<insert id="insert">
++		INSERT INTO rdc_out_header (
++		`id`,
++		`code`,
++		`billStatus`,
++		`sendId`,
++		`sendName`,
++		`receiveId`,
++		`uploadId`,
++		`uploadTime`,
++		`submitBy`,
++		`scanBy`,
++		create_by,
++		create_date,
++		update_by,
++		update_date,
++		remarks,
++		del_flag
++		)
++		VALUES
++		(
++		#{id},
++		#{header_id},
++		#{detail_id},
++		#{ctn_code},
++		#{product_id},
++		#{batch_code},
++		#{scan_code},
++		#{scan_by},
++		#{scan_time},
++		#{qty},
++		#{createBy},
++		#{createDate},
++		#{updateBy},
++		#{updateDate},
++		#{remarks},
++		#{delFlag}
++		)
++	</insert>
++
++</mapper>
+\ No newline at end of file
+Index: src/test/java/cn/sierac/SieracApiApplicationTests.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/test/java/cn/sierac/SieracApiApplicationTests.java	(revision c8cca14defcfd2e1545c588da2c9b4c3eb07365c)
++++ src/test/java/cn/sierac/SieracApiApplicationTests.java	(revision )
+@@ -81,7 +81,7 @@
+ 
+ 	@Test
+ 	public void testfindByCode(){
+-        RdcOutHeader rdcOutHeader =  rdcOutHeaderDao.findByCode("201708120004");
++        RdcOutHeader rdcOutHeader =  rdcOutHeaderDao.findByCode("80210320100000000313");
+ 
+ 	}
+ 
+Index: src/main/java/cn/sierac/api/ApiLoginController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/cn/sierac/api/ApiLoginController.java	(revision c8cca14defcfd2e1545c588da2c9b4c3eb07365c)
++++ src/main/java/cn/sierac/api/ApiLoginController.java	(revision )
+@@ -25,7 +25,7 @@
+  * Created by Jack on 2017/7/26.
+  */
+ @RestController
+-@RequestMapping(value = "a/api/v1")
++@RequestMapping(value = "/api/login")
+ public class ApiLoginController {
+ 
+     @Autowired
+@@ -37,7 +37,14 @@
+     @Autowired
+     private DealerLoginService dealerLoginService;
+ 
+-    @PostMapping(value="user/login" , headers = { "Accept=application/json" })
++    /**
++     * 登录
++     * @param request
++     * @param response
++     * @param JsonParam
++     * @return
++     */
++    @PostMapping(value="user" )
+     public Object login(HttpServletRequest request , HttpServletResponse response , @RequestBody String JsonParam){
+         User user = JSON.parseObject(JsonParam , User.class);
+ 
+Index: src/main/java/cn/sierac/api/ApiWarehouseOutListController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/cn/sierac/api/ApiWarehouseOutListController.java	(revision c8cca14defcfd2e1545c588da2c9b4c3eb07365c)
++++ src/main/java/cn/sierac/api/ApiWarehouseOutListController.java	(revision )
+@@ -4,6 +4,7 @@
+ import cn.sierac.common.result.Result;
+ import cn.sierac.entity.RdcOutHeader;
+ import cn.sierac.service.RdcOutHeaderService;
++import cn.sierac.utils.DateUtils;
+ import cn.sierac.utils.JsonMapper;
+ import cn.sierac.utils.ValidateToken;
+ import com.fasterxml.jackson.core.JsonParseException;
+@@ -27,30 +28,31 @@
+  * Created by Jack on 2017/7/28.
+  */
+ @RestController
+-@RequestMapping(value = "/a/api/v1/")
++@RequestMapping(value = "/api/warehouse/")
+ public class ApiWarehouseOutListController  {
+ 
+     @Autowired
+     private RdcOutHeaderService rdcOutHeaderService;
+ 
+ 
+-    private static ObjectMapper objectMapper = new ObjectMapper();
+-
+-    @PostMapping(value = "warehouse/out/list",headers = { "Accept=application/json" })
+-    public Object list(RdcOutHeader rdcOutHeader, HttpServletRequest request, HttpServletResponse response,
+-                       @RequestBody String JsonParam) throws JsonParseException, JsonMappingException, IOException {
+-        if (ValidateToken.isToken(request, response)) {
+-            RdcOutHeader rdcOutHeader1=objectMapper.readValue(JsonParam,RdcOutHeader.class);
+-            rdcOutHeader1.setBillStatus("1");
+-            List<RdcOutHeader> rdcOutHeaderList = rdcOutHeaderService.findAll(rdcOutHeader1);
+-            List<RdcOutHeader> rdcOutHeaders = new ArrayList<>();
++    /**
++     * 出库
++     * @param request
++     * @param rdcOutHeader
++     * @return
++     */
++    @PostMapping(value = "/out/list" )
++    public Object list( HttpServletRequest request,@RequestBody RdcOutHeader rdcOutHeader)
++   {
++        if (ValidateToken.isToken(request)) {
++            rdcOutHeader.setBillStatus("1");
++            List<RdcOutHeader> rdcOutHeaderList = rdcOutHeaderService.findAll(rdcOutHeader);
+             for(RdcOutHeader r : rdcOutHeaderList){ //时间处理
+                 String d = r.getUploadTime();
+-                d = d.substring(0,19);
+-                r.setUploadTime(d);
+-                rdcOutHeaders.add(r);
++                String dd = DateUtils.cover(d);
++                r.setUploadTime(dd);
+             }
+-            return new ResponseEntity<>(new Result(HttpStatus.OK.value(), rdcOutHeaders, HttpStatus.OK), HttpStatus.OK);
++            return new ResponseEntity<>(new Result(HttpStatus.OK.value(), rdcOutHeaderList, HttpStatus.OK), HttpStatus.OK);
+         }
+         else{
+             return new ResponseEntity<>(new Result(HttpStatus.FORBIDDEN.value(), null, HttpStatus.FORBIDDEN), HttpStatus.FORBIDDEN);
+Index: src/main/java/cn/sierac/api/ApiWarehouseDetailController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/cn/sierac/api/ApiWarehouseDetailController.java	(revision c8cca14defcfd2e1545c588da2c9b4c3eb07365c)
++++ src/main/java/cn/sierac/api/ApiWarehouseDetailController.java	(revision )
+@@ -26,22 +26,24 @@
+  * Created by Jack on 2017/7/29.
+  */
+ @RestController
+-@RequestMapping("/a/api/v1")
++@RequestMapping(value = "/api/warehouse/")
+ public class ApiWarehouseDetailController {
+ 
+     @Autowired
+     private WarehouseDetailService warehouseDetailService;
+ 
+-    private JsonMapper jsonMapper;
++    /**
++     * 单据下载
++     * @param request
++     * @param warehouseDetail
++     * @return
++     * @throws IOException
++     */
++    @PostMapping(value = "out/detail" )
++    public Object list( HttpServletRequest request  , @RequestBody WarehouseDetail warehouseDetail){
+ 
+-    private static ObjectMapper objectMapper = new ObjectMapper();
+-
+-    @PostMapping(value = "warehouse/out/detail" , headers = { "Accept=application/json" })
+-    public Object list(WarehouseDetail warehouseDetail , HttpServletRequest request , HttpServletResponse response , @RequestBody String JsonParam) throws IOException{
+-
+-        if (ValidateToken.isToken(request, response)) {
+-            WarehouseDetail rdcOutHeader1=objectMapper.readValue(JsonParam,WarehouseDetail.class);
+-            List<WarehouseDetail> rdcOutHeaderList = warehouseDetailService.findWarehouseDetail(rdcOutHeader1.getCode());
++        if (ValidateToken.isToken(request)) {
++            List<WarehouseDetail> rdcOutHeaderList = warehouseDetailService.findWarehouseDetail(warehouseDetail.getCode());
+             return new ResponseEntity<>(new Result(HttpStatus.OK.value(), rdcOutHeaderList, HttpStatus.OK), HttpStatus.OK);
+         }
+         else{
+Index: src/main/java/cn/sierac/api/ApiWarehouseOutScanCheckController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/cn/sierac/api/ApiWarehouseOutScanCheckController.java	(revision c8cca14defcfd2e1545c588da2c9b4c3eb07365c)
++++ src/main/java/cn/sierac/api/ApiWarehouseOutScanCheckController.java	(revision )
+@@ -25,20 +25,24 @@
+  * Created by Jack on 2017/7/29.
+  */
+ @RestController
+-@RequestMapping("a/api/v1")
++@RequestMapping(value = "/api/warehouse/")
+ public class ApiWarehouseOutScanCheckController {
+ 
+     @Autowired
+     private WarehouseOutScanCheckService warehouseOutScanCheckService;
+ 
+-    private static ObjectMapper objectMapper = new ObjectMapper();
++    /**
++     * 扫描代码
++     * @param warehouseOutScanCheck
++     * @param request
++     * @return
++     * @throws IOException
++     */
++    @PostMapping(value = "out/scan_check" )
++    public Object list(@RequestBody WarehouseOutScanCheck warehouseOutScanCheck , HttpServletRequest request ) {
+ 
+-    @PostMapping(value = "warehouse/out/scan_check" , headers = { "Accept=application/json" })
+-    public Object list(WarehouseOutScanCheck warehouseOutScanCheck , HttpServletRequest request , HttpServletResponse response , @RequestBody String JsonParam) throws IOException{
+-
+-        if (ValidateToken.isToken(request, response)) {
+-            WarehouseOutScanCheck warehouseOutScanCheck1=objectMapper.readValue(JsonParam,WarehouseOutScanCheck.class);
+-            List<WarehouseOutScanCheck> warehouseOutScanChecks = warehouseOutScanCheckService.findAll(warehouseOutScanCheck1.getCode());
++        if (ValidateToken.isToken(request)) {
++            List<WarehouseOutScanCheck> warehouseOutScanChecks = warehouseOutScanCheckService.findAll(warehouseOutScanCheck.getCode());
+             List<WarehouseOutScanCheck> list = new ArrayList<>();
+             for (WarehouseOutScanCheck data:warehouseOutScanChecks){
+                 if(data.getPackLevel()==1){
+Index: src/main/java/cn/sierac/entity/RdcOutHeader.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/cn/sierac/entity/RdcOutHeader.java	(revision c8cca14defcfd2e1545c588da2c9b4c3eb07365c)
++++ src/main/java/cn/sierac/entity/RdcOutHeader.java	(revision )
+@@ -5,7 +5,7 @@
+ import java.util.Date;
+ 
+ /**
+- * 出库实体
++ * 出库实体(基类)
+  * Created by Jack on 2017/7/28.
+  */
+ public class RdcOutHeader {
+Index: src/main/resources/mapper/RdcOutHeaderDao.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/resources/mapper/RdcOutHeaderDao.xml	(revision c8cca14defcfd2e1545c588da2c9b4c3eb07365c)
++++ src/main/resources/mapper/RdcOutHeaderDao.xml	(revision )
+@@ -22,6 +22,7 @@
+ 		WHERE  rh.`bill_status`=#{billStatus} and rh.`send_id` = #{sendId}
+ 		AND rh.del_flag = '0'
+ 
++
+ 	</select>
+ 
+ 
+Index: src/main/java/cn/sierac/dao/ApiRdcOutHeaderDao.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/cn/sierac/dao/ApiRdcOutHeaderDao.java	(revision )
++++ src/main/java/cn/sierac/dao/ApiRdcOutHeaderDao.java	(revision )
+@@ -0,0 +1,14 @@
++package cn.sierac.dao;
++
++import cn.sierac.entity.ApiRdcOutHeader;
++import org.apache.ibatis.annotations.Mapper;
++
++/**
++ * Created by Jack on 2017/7/31.
++ */
++@Mapper
++public interface ApiRdcOutHeaderDao {
++
++    public void save(ApiRdcOutHeader apiRdcOutHeader);
++
++}
+Index: src/main/java/cn/sierac/utils/ValidateToken.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/cn/sierac/utils/ValidateToken.java	(revision c8cca14defcfd2e1545c588da2c9b4c3eb07365c)
++++ src/main/java/cn/sierac/utils/ValidateToken.java	(revision )
+@@ -9,7 +9,7 @@
+  * Created by Jack on 2017/7/27.
+  */
+ public class ValidateToken {
+-    public static boolean isToken(HttpServletRequest request, HttpServletResponse response) {
++    public static boolean isToken(HttpServletRequest request) {
+         HttpSession session = request.getSession();
+         String token = "";
+         String stoken = "";
+Index: src/main/java/cn/sierac/api/ApiWarehouseCheckStatusController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/cn/sierac/api/ApiWarehouseCheckStatusController.java	(revision c8cca14defcfd2e1545c588da2c9b4c3eb07365c)
++++ src/main/java/cn/sierac/api/ApiWarehouseCheckStatusController.java	(revision )
+@@ -25,22 +25,25 @@
+  * Created by Jack on 2017/7/29.
+  */
+ @RestController
+-@RequestMapping("a/api/v1")
++@RequestMapping("api/warehouse")
+ public class ApiWarehouseCheckStatusController {
+ 
+-    private static ObjectMapper objectMapper = new ObjectMapper();
+-
+ 
+     @Autowired
+     private RdcOutHeaderService rdcOutHeaderService;
+ 
+-    @PostMapping(value = "/warehouse/out/scan_status" ,  headers = { "Accept=application/json" })
+-    public Object list(HttpServletRequest request , HttpServletResponse response , @RequestBody String JsonParam) throws IOException{
+-
+-        WarehouseOutScanCheck warehouseOutScanCheck1=objectMapper.readValue(JsonParam,WarehouseOutScanCheck.class);
++    /**
++     * 出库单据
++     * @param request
++     * @param warehouseOutScanCheck
++     * @return
++     * @throws IOException
++     */
++    @PostMapping(value = "out/scan_status")
++    public Object list(HttpServletRequest request , @RequestBody WarehouseOutScanCheck warehouseOutScanCheck) {
+         List<RdcOutHeader> warehouseOutScanChecks = new ArrayList<>();
+-        if (ValidateToken.isToken(request, response)) {
+-            RdcOutHeader rdcOutHeader =  rdcOutHeaderService.findByCode(warehouseOutScanCheck1.getCode());
++        if (ValidateToken.isToken(request)) {
++            RdcOutHeader rdcOutHeader =  rdcOutHeaderService.findByCode(warehouseOutScanCheck.getCode());
+             rdcOutHeader.setCode(rdcOutHeader.getBillStatus());
+             warehouseOutScanChecks.add(rdcOutHeader);
+             return new ResponseEntity<>(new Result(HttpStatus.OK.value(), warehouseOutScanChecks, HttpStatus.OK), HttpStatus.OK);
+Index: src/main/java/cn/sierac/api/ApiDealerListController.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/cn/sierac/api/ApiDealerListController.java	(revision c8cca14defcfd2e1545c588da2c9b4c3eb07365c)
++++ src/main/java/cn/sierac/api/ApiDealerListController.java	(revision )
+@@ -5,6 +5,7 @@
+ import cn.sierac.entity.RdcOutHeader;
+ import cn.sierac.service.DealerService;
+ import cn.sierac.utils.CollectionType;
++import cn.sierac.utils.DateUtils;
+ import cn.sierac.utils.ValidateToken;
+ import com.fasterxml.jackson.core.JsonParseException;
+ import com.fasterxml.jackson.databind.JsonMappingException;
+@@ -25,31 +26,33 @@
+ import java.util.Map;
+ 
+ /**
+- * 经销商发货
++ * 经销商调拨
+  * Created by Jack on 2017/7/27.
+  */
+ @RestController
+-@RequestMapping(value = "/a/api/v1/")
++@RequestMapping(value = "/api/dealer/")
+ public class ApiDealerListController {
+ 
+     @Autowired
+     private DealerService dealerService;
+ 
+-    @PostMapping(value = "dealer/out/list" , headers = { "Accept=application/json" })
+-    public Object list(Dealer dealer , HttpServletRequest request , HttpServletResponse response, @RequestBody String JsonParam) throws JsonParseException , JsonMappingException ,IOException {
+-        Map<String,Object> jsonMap =  new HashMap<String , Object>();
+-        if(ValidateToken.isToken(request,response)){
+-            Dealer dealer1 =  CollectionType.objectMapper.readValue(JsonParam,Dealer.class);
+-            dealer1.setBillStatus("1");
+-            List<Dealer> dealerList =  dealerService.findAll(dealer1);
+-            List<Dealer> dealers = new ArrayList<>();
+-            for(Dealer d : dealerList){ //时间处理
++    /**
++     * 经销商调拨
++     * @param request
++     * @param dealer
++     * @return
++     */
++    @PostMapping(value = "out/list" )
++    public Object list(HttpServletRequest request , @RequestBody Dealer dealer) {
++        if(ValidateToken.isToken(request)){
++            dealer.setBillStatus("1");
++            List<Dealer> dealerList =  dealerService.findAll(dealer);
++            for(Dealer d : dealerList){
+                 String da = d.getUploadTime();
+-                da = da.substring(0,19);
++                da=  DateUtils.cover(da);
+                 d.setUploadTime(da);
+-                dealers.add(d);
+             }
+-            return new ResponseEntity<>(new Result(HttpStatus.OK.value(), dealers, HttpStatus.OK), HttpStatus.OK);
++            return new ResponseEntity<>(new Result(HttpStatus.OK.value(), dealerList, HttpStatus.OK), HttpStatus.OK);
+         }
+         else{
+             return new ResponseEntity<>(new Result(HttpStatus.FORBIDDEN.value(), null, HttpStatus.FORBIDDEN), HttpStatus.FORBIDDEN);
+Index: src/main/java/cn/sierac/utils/DateUtils.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+--- src/main/java/cn/sierac/utils/DateUtils.java	(revision )
++++ src/main/java/cn/sierac/utils/DateUtils.java	(revision )
+@@ -0,0 +1,15 @@
++package cn.sierac.utils;
++
++import cn.sierac.entity.RdcOutHeader;
++
++/**
++ * Created by Jack on 2017/7/31.
++ */
++public class DateUtils {
++
++
++    public static String cover(String strDate){
++        return   strDate.substring(0,19);
++    }
++
++}

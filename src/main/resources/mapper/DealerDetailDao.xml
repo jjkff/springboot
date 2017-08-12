@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="cn.sierac.dao.DealerDetailDao">
+
+    <select id="findDealerDetail" resultType="DealerDetail">
+        select d.id,r.code, d.header_id , d.product_id , p.code as product_code , p.sku as product_sku , p.name as product_name,
+         r.send_id ,r.receive_code , d.batch_code
+         , d.actual_pcs_qty AS actualPcsQty ,d.expect_pcs_qty AS expectPcsQty
+        from dealer  r,  dealer_detail  d   , product p
+        where r.id = d.header_id and d.product_id = p.id  and r.code = #{code}
+	</select>
+
+</mapper>
